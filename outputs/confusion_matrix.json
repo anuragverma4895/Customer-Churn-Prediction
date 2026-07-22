@@ -1,0 +1,34 @@
+{
+  "logistic_regression": {
+    "matrix": [
+      [
+        543,
+        223
+      ],
+      [
+        210,
+        433
+      ]
+    ],
+    "labels": [
+      "No Churn",
+      "Churn"
+    ]
+  },
+  "random_forest": {
+    "matrix": [
+      [
+        545,
+        221
+      ],
+      [
+        224,
+        419
+      ]
+    ],
+    "labels": [
+      "No Churn",
+      "Churn"
+    ]
+  }
+}

@@ -1,0 +1,156 @@
+{
+  "logistic_regression": [
+    {
+      "feature": "Contract_Two year",
+      "importance": 1.0,
+      "raw_importance": 0.930252
+    },
+    {
+      "feature": "Contract_One year",
+      "importance": 0.6315,
+      "raw_importance": 0.587435
+    },
+    {
+      "feature": "tenure",
+      "importance": 0.5523,
+      "raw_importance": 0.513784
+    },
+    {
+      "feature": "InternetService_Fiber optic",
+      "importance": 0.3538,
+      "raw_importance": 0.329101
+    },
+    {
+      "feature": "PaymentMethod_Electronic check",
+      "importance": 0.2413,
+      "raw_importance": 0.224499
+    },
+    {
+      "feature": "PaperlessBilling",
+      "importance": 0.1421,
+      "raw_importance": 0.132191
+    },
+    {
+      "feature": "TechSupport_Yes",
+      "importance": 0.1381,
+      "raw_importance": 0.128482
+    },
+    {
+      "feature": "MonthlyCharges",
+      "importance": 0.1358,
+      "raw_importance": 0.126328
+    },
+    {
+      "feature": "OnlineSecurity_Yes",
+      "importance": 0.1263,
+      "raw_importance": 0.117499
+    },
+    {
+      "feature": "SeniorCitizen",
+      "importance": 0.1129,
+      "raw_importance": 0.105001
+    },
+    {
+      "feature": "StreamingMovies_Yes",
+      "importance": 0.0642,
+      "raw_importance": 0.059738
+    },
+    {
+      "feature": "PaymentMethod_Credit card (automatic)",
+      "importance": 0.0473,
+      "raw_importance": 0.043973
+    },
+    {
+      "feature": "gender",
+      "importance": 0.0328,
+      "raw_importance": 0.030502
+    },
+    {
+      "feature": "TotalCharges",
+      "importance": 0.0304,
+      "raw_importance": 0.028267
+    },
+    {
+      "feature": "DeviceProtection_Yes",
+      "importance": 0.0288,
+      "raw_importance": 0.026807
+    }
+  ],
+  "random_forest": [
+    {
+      "feature": "Contract_Two year",
+      "importance": 1.0,
+      "raw_importance": 0.193115
+    },
+    {
+      "feature": "TotalCharges",
+      "importance": 0.7274,
+      "raw_importance": 0.140476
+    },
+    {
+      "feature": "tenure",
+      "importance": 0.7123,
+      "raw_importance": 0.137565
+    },
+    {
+      "feature": "MonthlyCharges",
+      "importance": 0.6696,
+      "raw_importance": 0.12931
+    },
+    {
+      "feature": "Contract_One year",
+      "importance": 0.3786,
+      "raw_importance": 0.073108
+    },
+    {
+      "feature": "InternetService_Fiber optic",
+      "importance": 0.1825,
+      "raw_importance": 0.035241
+    },
+    {
+      "feature": "PaymentMethod_Electronic check",
+      "importance": 0.1321,
+      "raw_importance": 0.025515
+    },
+    {
+      "feature": "PaperlessBilling",
+      "importance": 0.1063,
+      "raw_importance": 0.020529
+    },
+    {
+      "feature": "Dependents",
+      "importance": 0.1008,
+      "raw_importance": 0.019467
+    },
+    {
+      "feature": "Partner",
+      "importance": 0.1008,
+      "raw_importance": 0.019458
+    },
+    {
+      "feature": "SeniorCitizen",
+      "importance": 0.1003,
+      "raw_importance": 0.019367
+    },
+    {
+      "feature": "gender",
+      "importance": 0.0991,
+      "raw_importance": 0.019133
+    },
+    {
+      "feature": "MultipleLines_Yes",
+      "importance": 0.0988,
+      "raw_importance": 0.019072
+    },
+    {
+      "feature": "TechSupport_Yes",
+      "importance": 0.0834,
+      "raw_importance": 0.016096
+    },
+    {
+      "feature": "OnlineSecurity_Yes",
+      "importance": 0.0799,
+      "raw_importance": 0.01543
+    }
+  ]
+}

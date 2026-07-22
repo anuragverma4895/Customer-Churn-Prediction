@@ -1,0 +1,41 @@
+{
+  "total_customers": 7043,
+  "churn_yes": 3216,
+  "churn_no": 3827,
+  "churn_rate": 45.7,
+  "gender_distribution": {
+    "Male": 3611,
+    "Female": 3432
+  },
+  "senior_citizens": 1112,
+  "partner_distribution": {
+    "No": 3756,
+    "Yes": 3287
+  },
+  "contract_distribution": {
+    "Month-to-month": 3869,
+    "Two year": 1705,
+    "One year": 1469
+  },
+  "internet_distribution": {
+    "Fiber optic": 3157,
+    "DSL": 2392,
+    "No": 1494
+  },
+  "payment_distribution": {
+    "Electronic check": 2392,
+    "Mailed check": 1646,
+    "Bank transfer (automatic)": 1521,
+    "Credit card (automatic)": 1484
+  },
+  "tenure_stats": {
+    "mean": 32.4,
+    "median": 36,
+    "std": 23.2
+  },
+  "monthly_charges_stats": {
+    "mean": 59.15,
+    "median": 60.83,
+    "std": 26.59
+  }
+}
