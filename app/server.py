@@ -11,6 +11,7 @@ sys.path.insert(0, PROJECT_ROOT)
 
 from flask import Flask, request, jsonify, render_template, send_from_directory
 from flask_cors import CORS
+from typing import Union
 
 from src.utils import load_json, get_output_path
 from src.predict import predict_single
@@ -25,7 +26,7 @@ CORS(app)
 
 # ─── Helper: Load pre-computed JSON ───
 
-def _load_output(filename: str) -> dict | list:
+def _load_output(filename: str) -> Union[dict, list]:
     """Load a JSON file from the outputs/ directory."""
     path = get_output_path(filename)
     if not os.path.exists(path):

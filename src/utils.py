@@ -4,6 +4,7 @@ Utility functions for the Customer Churn Prediction project.
 
 import os
 import json
+from typing import Union
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
@@ -32,14 +33,14 @@ def get_output_path(filename: str) -> str:
     return os.path.join(path, filename)
 
 
-def save_json(data: dict | list, filepath: str) -> None:
+def save_json(data: Union[dict, list], filepath: str) -> None:
     """Save data as a formatted JSON file."""
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
     with open(filepath, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, default=str)
 
 
-def load_json(filepath: str) -> dict | list:
+def load_json(filepath: str) -> Union[dict, list]:
     """Load data from a JSON file."""
     with open(filepath, "r", encoding="utf-8") as f:
         return json.load(f)

@@ -7,6 +7,7 @@ import os
 import sys
 import numpy as np
 import pandas as pd
+from typing import Optional
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 
@@ -44,7 +45,7 @@ ONEHOT_COLS = [
 NUMERIC_COLS = ["tenure", "MonthlyCharges", "TotalCharges"]
 
 
-def load_data(filepath: str | None = None) -> pd.DataFrame:
+def load_data(filepath: Optional[str] = None) -> pd.DataFrame:
     """
     Load the Telco Customer Churn CSV.
 
@@ -151,7 +152,7 @@ def scale_features(
 
 
 def preprocess_pipeline(
-    filepath: str | None = None,
+    filepath: Optional[str] = None,
     test_size: float = 0.2,
     random_state: int = 42,
 ) -> dict:
