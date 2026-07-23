@@ -15,6 +15,13 @@ sys.path.insert(0, PROJECT_ROOT)
 from src.utils import get_model_path
 
 
+def _patch_loaded_model(model):
+    """Patch older pickled estimators for newer scikit-learn runtimes."""
+    if model.__class__.__name__ == "LogisticRegression" and not hasattr(model, "multi_class"):
+        model.multi_class = "auto"
+    return model
+
+
 def load_prediction_artifacts(model_name: str = "random_forest") -> tuple:
     """
     Load trained model, scaler, and feature names for prediction.
@@ -28,7 +35,7 @@ def load_prediction_artifacts(model_name: str = "random_forest") -> tuple:
     -------
     tuple of (model, scaler, feature_names)
     """
-    model = joblib.load(get_model_path(f"{model_name}.pkl"))
+    model = _patch_loaded_model(joblib.load(get_model_path(f"{model_name}.pkl")))
     scaler = joblib.load(get_model_path("scaler.pkl"))
     feature_names = joblib.load(get_model_path("feature_names.pkl"))
     return model, scaler, feature_names
