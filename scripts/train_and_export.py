@@ -30,12 +30,12 @@ from src.model_evaluation import (
 def run_pipeline():
     """Execute the full training and export pipeline."""
 
-    # ─── Step 1: Generate data if it doesn't exist ───
+    # ─── Step 1: Download real dataset if it doesn't exist ───
     data_path = get_data_path("telco_churn.csv")
     if not os.path.exists(data_path):
-        print_section("Step 1: Generating Dataset")
-        from scripts.generate_data import main as generate_main
-        generate_main()
+        print_section("Step 1: Downloading Real Dataset")
+        from scripts.download_data import main as download_main
+        download_main()
     else:
         print_section("Step 1: Dataset Found")
         print(f"  Using existing dataset: {data_path}")

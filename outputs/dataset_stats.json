@@ -1,41 +1,41 @@
 {
   "total_customers": 7043,
-  "churn_yes": 3216,
-  "churn_no": 3827,
-  "churn_rate": 45.7,
+  "churn_yes": 1869,
+  "churn_no": 5174,
+  "churn_rate": 26.5,
   "gender_distribution": {
-    "Male": 3611,
-    "Female": 3432
+    "Male": 3555,
+    "Female": 3488
   },
-  "senior_citizens": 1112,
+  "senior_citizens": 1142,
   "partner_distribution": {
-    "No": 3756,
-    "Yes": 3287
+    "No": 3641,
+    "Yes": 3402
   },
   "contract_distribution": {
-    "Month-to-month": 3869,
-    "Two year": 1705,
-    "One year": 1469
+    "Month-to-month": 3875,
+    "Two year": 1695,
+    "One year": 1473
   },
   "internet_distribution": {
-    "Fiber optic": 3157,
-    "DSL": 2392,
-    "No": 1494
+    "Fiber optic": 3096,
+    "DSL": 2421,
+    "No": 1526
   },
   "payment_distribution": {
-    "Electronic check": 2392,
-    "Mailed check": 1646,
-    "Bank transfer (automatic)": 1521,
-    "Credit card (automatic)": 1484
+    "Electronic check": 2365,
+    "Mailed check": 1612,
+    "Bank transfer (automatic)": 1544,
+    "Credit card (automatic)": 1522
   },
   "tenure_stats": {
     "mean": 32.4,
-    "median": 36,
-    "std": 23.2
+    "median": 29,
+    "std": 24.6
   },
   "monthly_charges_stats": {
-    "mean": 59.15,
-    "median": 60.83,
-    "std": 26.59
+    "mean": 64.76,
+    "median": 70.35,
+    "std": 30.09
   }
 }
