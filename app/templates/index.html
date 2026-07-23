@@ -4,274 +4,381 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer Churn Prediction Dashboard</title>
-    
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-
-    <!-- Header -->
     <header class="header">
         <div class="header-inner">
             <div class="header-brand">
-                <div class="brand-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                <div class="brand-icon" aria-hidden="true"></div>
+                <div>
+                    <h1>Customer Churn Prediction</h1>
+                    <span class="brand-tag">IBM Telco data</span>
                 </div>
-                <h1>Customer Churn Analytics</h1>
-                <span class="brand-tag">ML Dashboard</span>
             </div>
             <div class="header-actions">
-                <button id="theme-toggle" class="header-btn" aria-label="Toggle theme">
-                    <!-- Icon injected by theme.js -->
-                </button>
-                <a href="https://github.com/anuragverma4895/Customer-Churn-Prediction" target="_blank" class="header-link" aria-label="GitHub Repository" id="github-link">
-                    <!-- Icon injected by app.js (optional, inline below for immediate render) -->
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
-                </a>
+                <a class="header-link" href="#predict-panel">Predict</a>
+                <a class="header-link" href="#analytics-panel">Analytics</a>
+                <button id="theme-toggle" class="header-btn" aria-label="Toggle theme"></button>
+                <a href="https://github.com/anuragverma4895/Customer-Churn-Prediction" target="_blank" class="header-btn" aria-label="GitHub Repository" id="github-link"></a>
             </div>
         </div>
     </header>
 
     <main class="main-content">
-        
-        <!-- KPI Cards -->
-        <section class="kpi-grid">
-            <div class="kpi-card animate-on-scroll">
-                <div class="kpi-card-content">
-                    <div class="kpi-icon-wrapper" id="kpi-icon-customers"></div>
-                    <div class="kpi-label">Total Customers</div>
-                    <div class="kpi-value" id="kpi-total-customers">---</div>
+        <section class="overview-band animate-on-scroll" aria-labelledby="dashboard-title">
+            <div class="overview-copy">
+                <span class="eyebrow">Retention intelligence</span>
+                <h2 id="dashboard-title">Find customers who may leave before revenue is lost.</h2>
+                <p>This dashboard trains on the real IBM Telco Customer Churn dataset and turns a customer profile into a churn probability, risk level, and retention guidance.</p>
+                <div class="proof-row">
+                    <span id="source-pill">Real dataset: validating...</span>
+                    <span id="best-model-pill">Best model: loading...</span>
                 </div>
             </div>
-            
-            <div class="kpi-card animate-on-scroll">
-                <div class="kpi-card-content">
-                    <div class="kpi-icon-wrapper" id="kpi-icon-churn"></div>
-                    <div class="kpi-label">Global Churn Rate</div>
-                    <div class="kpi-value" id="kpi-churn-rate">---</div>
+            <div class="workflow-panel" aria-label="Dashboard workflow">
+                <div class="workflow-step">
+                    <span>01</span>
+                    <strong>Load a real record</strong>
+                    <small>Use verified rows from the local IBM Telco CSV.</small>
                 </div>
-            </div>
-            
-            <div class="kpi-card animate-on-scroll">
-                <div class="kpi-card-content">
-                    <div class="kpi-icon-wrapper" id="kpi-icon-accuracy"></div>
-                    <div class="kpi-label">Model Accuracy (Best)</div>
-                    <div class="kpi-value" id="kpi-accuracy">---</div>
+                <div class="workflow-step">
+                    <span>02</span>
+                    <strong>Review the profile</strong>
+                    <small>Demographic, service, contract, and billing fields are model inputs.</small>
                 </div>
-            </div>
-            
-            <div class="kpi-card animate-on-scroll">
-                <div class="kpi-card-content">
-                    <div class="kpi-icon-wrapper" id="kpi-icon-f1"></div>
-                    <div class="kpi-label">F1 Score</div>
-                    <div class="kpi-value" id="kpi-f1">---</div>
+                <div class="workflow-step">
+                    <span>03</span>
+                    <strong>Read the risk</strong>
+                    <small>Probability, prediction, and next actions appear instantly.</small>
                 </div>
             </div>
         </section>
 
-        <!-- Model Comparison & Form -->
-        <div class="prediction-grid">
-            
-            <!-- Comparison Table -->
-            <section class="comparison-section animate-on-scroll">
-                <div class="card h-100">
-                    <div class="card-header">
-                        <h3><span class="card-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span> Model Performance</h3>
-                        <span class="best-model-badge" id="best-model-badge">Loading...</span>
-                    </div>
-                    <div class="card-body p-0">
-                        <table class="comparison-table">
-                            <thead>
-                                <tr>
-                                    <th>Metric</th>
-                                    <th>Logistic Regression</th>
-                                    <th>Random Forest</th>
-                                </tr>
-                            </thead>
-                            <tbody id="comparison-tbody">
-                                <!-- Populated by JS -->
-                                <tr><td colspan="3" style="text-align: center; padding: 2rem;">Loading metrics...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
+        <section class="kpi-grid animate-on-scroll" aria-label="Dataset and model summary">
+            <div class="kpi-card">
+                <div class="kpi-icon-wrapper" id="kpi-icon-customers"></div>
+                <div class="kpi-label">Total Customers</div>
+                <div class="kpi-value" id="kpi-total-customers">---</div>
+                <div class="kpi-note">Rows in the real CSV</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-icon-wrapper" id="kpi-icon-churn"></div>
+                <div class="kpi-label">Churn Rate</div>
+                <div class="kpi-value" id="kpi-churn-rate">---</div>
+                <div class="kpi-note"><span id="kpi-churn-count">---</span> customers churned</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-icon-wrapper" id="kpi-icon-accuracy"></div>
+                <div class="kpi-label">Best Accuracy</div>
+                <div class="kpi-value" id="kpi-accuracy">---</div>
+                <div class="kpi-note" id="kpi-accuracy-note">Model evaluation</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-icon-wrapper" id="kpi-icon-f1"></div>
+                <div class="kpi-label">Best F1 Score</div>
+                <div class="kpi-value" id="kpi-f1">---</div>
+                <div class="kpi-note">Balances precision and recall</div>
+            </div>
+        </section>
 
-            <!-- Prediction Form -->
-            <section class="prediction-section animate-on-scroll">
-                <div class="card">
-                    <div class="card-header">
-                        <h3><span class="card-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> Live Prediction Engine</h3>
+        <section class="prediction-grid" id="predict-panel">
+            <div class="card prediction-section animate-on-scroll">
+                <div class="card-header stacked-header">
+                    <div>
+                        <span class="section-kicker">Prediction engine</span>
+                        <h3>Customer Profile</h3>
+                    </div>
+                    <span class="data-badge">No synthetic records</span>
+                </div>
+                <div class="card-body">
+                    <div class="real-record-panel">
+                        <div>
+                            <label for="real-customer-select">Real customer record</label>
+                            <select id="real-customer-select">
+                                <option value="">Loading real records...</option>
+                            </select>
+                        </div>
+                        <div class="record-meta" id="record-meta">Source: data/telco_churn.csv</div>
+                    </div>
+
+                    <form id="predict-form" class="form-grid">
+                        <div class="form-section-title">Demographics</div>
+                        <div class="form-group">
+                            <label for="gender">Gender</label>
+                            <select id="gender" name="gender">
+                                <option value="Female">Female</option>
+                                <option value="Male">Male</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="SeniorCitizen">Senior Citizen</label>
+                            <select id="SeniorCitizen" name="SeniorCitizen">
+                                <option value="0">No</option>
+                                <option value="1">Yes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="Partner">Partner</label>
+                            <select id="Partner" name="Partner">
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="Dependents">Dependents</label>
+                            <select id="Dependents" name="Dependents">
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                            </select>
+                        </div>
+
+                        <div class="form-section-title">Account</div>
+                        <div class="form-group">
+                            <label for="tenure">Tenure</label>
+                            <input type="number" id="tenure" name="tenure" value="1" min="0" max="72" step="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Contract">Contract</label>
+                            <select id="Contract" name="Contract">
+                                <option value="Month-to-month">Month-to-month</option>
+                                <option value="One year">One year</option>
+                                <option value="Two year">Two year</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="PaperlessBilling">Paperless Billing</label>
+                            <select id="PaperlessBilling" name="PaperlessBilling">
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="PaymentMethod">Payment Method</label>
+                            <select id="PaymentMethod" name="PaymentMethod">
+                                <option value="Electronic check">Electronic check</option>
+                                <option value="Mailed check">Mailed check</option>
+                                <option value="Bank transfer (automatic)">Bank transfer</option>
+                                <option value="Credit card (automatic)">Credit card</option>
+                            </select>
+                        </div>
+
+                        <div class="form-section-title">Services</div>
+                        <div class="form-group">
+                            <label for="PhoneService">Phone Service</label>
+                            <select id="PhoneService" name="PhoneService">
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="MultipleLines">Multiple Lines</label>
+                            <select id="MultipleLines" name="MultipleLines">
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No phone service">No phone service</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="InternetService">Internet Service</label>
+                            <select id="InternetService" name="InternetService">
+                                <option value="Fiber optic">Fiber optic</option>
+                                <option value="DSL">DSL</option>
+                                <option value="No">No internet</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="OnlineSecurity">Online Security</label>
+                            <select id="OnlineSecurity" name="OnlineSecurity">
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No internet service">No internet service</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="OnlineBackup">Online Backup</label>
+                            <select id="OnlineBackup" name="OnlineBackup">
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No internet service">No internet service</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="DeviceProtection">Device Protection</label>
+                            <select id="DeviceProtection" name="DeviceProtection">
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No internet service">No internet service</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="TechSupport">Tech Support</label>
+                            <select id="TechSupport" name="TechSupport">
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No internet service">No internet service</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="StreamingTV">Streaming TV</label>
+                            <select id="StreamingTV" name="StreamingTV">
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No internet service">No internet service</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="StreamingMovies">Streaming Movies</label>
+                            <select id="StreamingMovies" name="StreamingMovies">
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No internet service">No internet service</option>
+                            </select>
+                        </div>
+
+                        <div class="form-section-title">Billing and model</div>
+                        <div class="form-group">
+                            <label for="MonthlyCharges">Monthly Charges ($)</label>
+                            <input type="number" id="MonthlyCharges" name="MonthlyCharges" value="29.85" min="0" max="130" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="TotalCharges">Total Charges ($)</label>
+                            <input type="number" id="TotalCharges" name="TotalCharges" value="29.85" min="0" step="0.01" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="model">Model</label>
+                            <select id="model" name="model">
+                                <option value="logistic_regression">Logistic Regression</option>
+                                <option value="random_forest">Random Forest</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <button type="submit" class="submit-btn">
+                                <span id="submit-icon"></span>
+                                <span>Predict Churn Risk</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <aside class="result-column animate-on-scroll">
+                <div class="card result-card">
+                    <div class="card-header stacked-header">
+                        <div>
+                            <span class="section-kicker">Decision view</span>
+                            <h3>Risk Result</h3>
+                        </div>
                     </div>
                     <div class="card-body">
-                        <form id="predict-form" class="form-grid">
-                            
-                            <div class="form-group">
-                                <label for="tenure">Tenure (Months)</label>
-                                <input type="number" id="tenure" name="tenure" value="12" min="0" max="72" required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="Contract">Contract Type</label>
-                                <select id="Contract" name="Contract">
-                                    <option value="Month-to-month">Month-to-month</option>
-                                    <option value="One year">One year</option>
-                                    <option value="Two year">Two year</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="MonthlyCharges">Monthly Charges ($)</label>
-                                <input type="number" id="MonthlyCharges" name="MonthlyCharges" value="70.50" step="0.01" required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="TotalCharges">Total Charges ($)</label>
-                                <input type="number" id="TotalCharges" name="TotalCharges" value="846.00" step="0.01" required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="InternetService">Internet Service</label>
-                                <select id="InternetService" name="InternetService">
-                                    <option value="Fiber optic">Fiber optic</option>
-                                    <option value="DSL">DSL</option>
-                                    <option value="No">No Internet</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="PaymentMethod">Payment Method</label>
-                                <select id="PaymentMethod" name="PaymentMethod">
-                                    <option value="Electronic check">Electronic check</option>
-                                    <option value="Mailed check">Mailed check</option>
-                                    <option value="Bank transfer (automatic)">Bank transfer</option>
-                                    <option value="Credit card (automatic)">Credit card</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="OnlineSecurity">Online Security</label>
-                                <select id="OnlineSecurity" name="OnlineSecurity">
-                                    <option value="No">No</option>
-                                    <option value="Yes">Yes</option>
-                                    <option value="No internet service">No internet service</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="TechSupport">Tech Support</label>
-                                <select id="TechSupport" name="TechSupport">
-                                    <option value="No">No</option>
-                                    <option value="Yes">Yes</option>
-                                    <option value="No internet service">No internet service</option>
-                                </select>
-                            </div>
-                            
-                            <!-- Hidden default fields to simplify the demo form -->
-                            <input type="hidden" name="gender" value="Male">
-                            <input type="hidden" name="SeniorCitizen" value="0">
-                            <input type="hidden" name="Partner" value="No">
-                            <input type="hidden" name="Dependents" value="No">
-                            <input type="hidden" name="PhoneService" value="Yes">
-                            <input type="hidden" name="MultipleLines" value="No">
-                            <input type="hidden" name="OnlineBackup" value="No">
-                            <input type="hidden" name="DeviceProtection" value="No">
-                            <input type="hidden" name="StreamingTV" value="No">
-                            <input type="hidden" name="StreamingMovies" value="No">
-                            <input type="hidden" name="PaperlessBilling" value="Yes">
-                            <input type="hidden" name="model" value="random_forest">
-
-                            <div class="form-group full-width">
-                                <button type="submit" class="submit-btn">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                                    <span>Predict Churn</span>
-                                </button>
-                            </div>
-                        </form>
-                        
-                        <div id="prediction-result" class="mt-4">
-                            <!-- Populated by JS -->
+                        <div id="prediction-result" class="empty-result">
+                            <div class="empty-icon" id="empty-result-icon"></div>
+                            <strong>No prediction yet</strong>
+                            <span>Choose a real customer profile and run the model.</span>
                         </div>
                     </div>
                 </div>
-            </section>
-        </div>
 
-        <!-- Charts Grid -->
-        <section class="charts-section animate-on-scroll">
+                <div class="card insight-card">
+                    <div class="card-header stacked-header">
+                        <div>
+                            <span class="section-kicker">Dataset signals</span>
+                            <h3>Business Context</h3>
+                        </div>
+                    </div>
+                    <div class="card-body insight-list" id="dataset-insights">
+                        <div class="insight-row"><span>Contract mix</span><strong>Loading...</strong></div>
+                        <div class="insight-row"><span>Payment mix</span><strong>Loading...</strong></div>
+                        <div class="insight-row"><span>Average monthly charge</span><strong>Loading...</strong></div>
+                    </div>
+                </div>
+            </aside>
+        </section>
+
+        <section class="comparison-section animate-on-scroll" aria-labelledby="model-performance-title">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <span class="section-kicker">Model comparison</span>
+                        <h3 id="model-performance-title">Evaluation Metrics</h3>
+                    </div>
+                    <span class="best-model-badge" id="best-model-badge">Loading...</span>
+                </div>
+                <div class="card-body p-0 table-scroll">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>Logistic Regression</th>
+                                <th>Random Forest</th>
+                            </tr>
+                        </thead>
+                        <tbody id="comparison-tbody">
+                            <tr><td colspan="3">Loading metrics...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="charts-section animate-on-scroll" id="analytics-panel" aria-label="Model analytics charts">
             <div class="charts-grid">
-                
-                <!-- ROC Curve -->
                 <div class="card">
                     <div class="card-header">
-                        <h3><span class="card-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/></svg></span> ROC Curve</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <canvas id="roc-chart"></canvas>
+                        <div>
+                            <span class="section-kicker">Classifier quality</span>
+                            <h3>ROC Curve</h3>
                         </div>
                     </div>
+                    <div class="card-body"><div class="chart-container"><canvas id="roc-chart"></canvas></div></div>
                 </div>
-
-                <!-- Feature Importance -->
                 <div class="card">
                     <div class="card-header">
-                        <h3><span class="card-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span> Feature Importance</h3>
+                        <div>
+                            <span class="section-kicker">Model drivers</span>
+                            <h3>Feature Importance</h3>
+                        </div>
                         <select class="chart-select" id="fi-model-select">
-                            <option value="random_forest">Random Forest</option>
                             <option value="logistic_regression">Logistic Regression</option>
+                            <option value="random_forest">Random Forest</option>
                         </select>
                     </div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <canvas id="fi-chart"></canvas>
-                        </div>
-                    </div>
+                    <div class="card-body"><div class="chart-container"><canvas id="fi-chart"></canvas></div></div>
                 </div>
-
-                <!-- Confusion Matrix -->
                 <div class="card">
                     <div class="card-header">
-                        <h3><span class="card-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg></span> Confusion Matrix</h3>
+                        <div>
+                            <span class="section-kicker">Test-set outcomes</span>
+                            <h3>Confusion Matrix</h3>
+                        </div>
                         <select class="chart-select" id="cm-model-select">
-                            <option value="random_forest">Random Forest</option>
                             <option value="logistic_regression">Logistic Regression</option>
+                            <option value="random_forest">Random Forest</option>
                         </select>
                     </div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <canvas id="cm-chart"></canvas>
-                        </div>
-                    </div>
+                    <div class="card-body"><div class="chart-container"><canvas id="cm-chart"></canvas></div></div>
                 </div>
-
-                <!-- Churn Distribution -->
                 <div class="card">
                     <div class="card-header">
-                        <h3><span class="card-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg></span> Dataset Distribution</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <canvas id="dist-chart"></canvas>
+                        <div>
+                            <span class="section-kicker">Dataset outcome</span>
+                            <h3>Churn Distribution</h3>
                         </div>
                     </div>
+                    <div class="card-body"><div class="chart-container"><canvas id="dist-chart"></canvas></div></div>
                 </div>
-
             </div>
         </section>
-
     </main>
 
     <footer class="footer">
         <div class="footer-inner">
-            <div class="footer-left">
+            <div>
                 <div class="footer-title">Customer Churn Prediction</div>
-                <div class="footer-sub">Machine Learning Pipeline & Analytics Dashboard</div>
+                <div class="footer-sub">Real IBM Telco CSV, Flask API, scikit-learn models, Chart.js analytics.</div>
             </div>
             <div class="footer-badges">
                 <span class="tech-badge">Python</span>
@@ -282,7 +389,6 @@
         </div>
     </footer>
 
-    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{{ url_for('static', filename='js/icons.js') }}"></script>
     <script src="{{ url_for('static', filename='js/theme.js') }}"></script>

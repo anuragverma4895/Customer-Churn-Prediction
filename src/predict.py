@@ -120,7 +120,7 @@ def predict_single(
 
     # Prepare input
     input_df = prepare_single_input(customer_data, feature_names)
-    input_scaled = scaler.transform(input_df.values)
+    input_scaled = scaler.transform(input_df)
 
     # Predict
     prob = float(model.predict_proba(input_scaled)[0][1])

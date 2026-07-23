@@ -1,102 +1,107 @@
 # Customer Churn Prediction & Analytics Dashboard
 
-![Customer Churn Dashboard](https://img.shields.io/badge/Status-Complete-success?style=for-the-badge)
-![Python](https://img.shields.io/badge/Python-3.9+-blue?style=for-the-badge&logo=python&logoColor=white)
-![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)
-![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)
+A Flask and scikit-learn project that predicts telecom customer churn using the real IBM Telco Customer Churn dataset. The web dashboard shows dataset KPIs, model evaluation, feature importance, ROC analysis, confusion matrix, and a live customer-risk prediction form.
 
-A production-grade machine learning project that predicts customer churn using the **IBM Telco Customer Churn** dataset. It features a complete data pipeline, model training (Logistic Regression & Random Forest), and a premium interactive web dashboard to visualize metrics and make live predictions.
+## Real Dataset
 
-## Dataset
+This project uses the public IBM Telco Customer Churn dataset, not generated or synthetic data.
 
-This project uses the **IBM Telco Customer Churn** dataset — a real-world dataset from IBM Sample Data Sets containing 7,043 customers and 21 features.
+- Source: https://github.com/IBM/telco-customer-churn-on-icp4d
+- Kaggle mirror: https://www.kaggle.com/datasets/blastchar/telco-customer-churn
+- Local file: `data/telco_churn.csv`
+- Rows: 7,043 customers
+- Columns: 21 fields including demographics, services, billing, and churn label
+- Churned customers: 1,869
+- Churn rate: 26.5%
 
-- **Source**: [IBM/telco-customer-churn-on-icp4d](https://github.com/IBM/telco-customer-churn-on-icp4d) (GitHub) / [Kaggle](https://www.kaggle.com/datasets/blastchar/telco-customer-churn)
-- **Rows**: 7,043 customers
-- **Features**: 21 (demographics, services, billing, and churn label)
-- **Churn Rate**: ~26.5% (1,869 out of 7,043 customers churned)
+The download script validates row count, column count, required schema, and churn-rate range before accepting the dataset.
 
-The dataset is automatically downloaded from IBM's GitHub repository when you run the training pipeline for the first time.
+## What The Dashboard Does
 
-## Features
-
-- **Real Data Pipeline**: Automatically downloads and processes the IBM Telco Churn dataset (7,043 rows, 21 features).
-- **ML Pipeline**: 
-  - Automated data cleaning, scaling (StandardScaler), and encoding (Label & One-Hot).
-  - Feature engineering (tenure buckets, service counts).
-  - Model training with `GridSearchCV` hyperparameter tuning.
-  - Cross-validation and full evaluation metrics (Accuracy, Precision, Recall, F1, AUC, ROC).
-- **Interactive Dashboard**:
-  - Premium dark/light theme (glassmorphism UI, micro-animations).
-  - Live prediction engine (form inputs → Flask API → real-time churn probability).
-  - Chart.js visualizations (Confusion Matrix, ROC Curve, Feature Importance).
-- **REST API**: Built with Flask to serve models and metrics.
+- Loads real customer examples directly from `data/telco_churn.csv`.
+- Uses trained Logistic Regression and Random Forest models from `models/`.
+- Defaults predictions to the best exported model from `outputs/metrics.json`.
+- Shows business KPIs from `outputs/dataset_stats.json`.
+- Displays model metrics, ROC curve, feature importance, confusion matrix, and churn distribution.
+- Returns churn probability, predicted churn label, risk level, and retention guidance for a customer profile.
 
 ## Project Structure
 
 ```text
 Customer-Churn-Prediction/
-├── app/
-│   ├── server.py              # Flask API server
-│   ├── static/                # CSS, JS, Fonts
-│   │   ├── css/styles.css
-│   │   └── js/ (app.js, charts.js, icons.js, theme.js)
-│   └── templates/
-│       └── index.html         # Main dashboard HTML
-├── data/
-│   └── telco_churn.csv        # IBM Telco Customer Churn dataset
-├── models/                    # Trained model artifacts (.pkl)
-├── outputs/                   # Exported metrics JSON for dashboard
-├── scripts/
-│   ├── download_data.py       # Dataset downloader (from IBM GitHub)
-│   └── train_and_export.py    # Master pipeline script
-├── src/
-│   ├── data_preprocessing.py
-│   ├── feature_engineering.py
-│   ├── model_evaluation.py
-│   ├── model_training.py
-│   ├── predict.py
-│   └── utils.py
-├── requirements.txt
-└── README.md
+|-- app/
+|   |-- server.py
+|   |-- static/
+|   |   |-- css/styles.css
+|   |   `-- js/app.js, charts.js, icons.js, theme.js
+|   `-- templates/index.html
+|-- data/telco_churn.csv
+|-- models/
+|   |-- logistic_regression.pkl
+|   |-- random_forest.pkl
+|   |-- scaler.pkl
+|   `-- feature_names.pkl
+|-- outputs/
+|   |-- metrics.json
+|   |-- dataset_stats.json
+|   |-- feature_importance.json
+|   |-- confusion_matrix.json
+|   `-- roc_data.json
+|-- scripts/
+|   |-- download_data.py
+|   `-- train_and_export.py
+|-- src/
+|   |-- data_preprocessing.py
+|   |-- feature_engineering.py
+|   |-- model_evaluation.py
+|   |-- model_training.py
+|   |-- predict.py
+|   `-- utils.py
+|-- requirements.txt
+`-- render.yaml
 ```
 
-## Installation & Setup
+## Setup
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/anuragverma4895/Customer-Churn-Prediction.git
-   cd Customer-Churn-Prediction
-   ```
+```bash
+pip install -r requirements.txt
+```
 
-2. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-## Usage
-
-### 1. Train the Models
-Run the master pipeline script. This will download the real IBM Telco dataset (if not already present), preprocess the data, train both models (Logistic Regression & Random Forest) with GridSearch, and export all metrics/artifacts.
+## Train Models
 
 ```bash
 python scripts/train_and_export.py
 ```
 
-### 2. Start the Dashboard
-Launch the Flask API server to serve the models and the web interface.
+This downloads and validates the IBM dataset if needed, cleans and encodes the data, trains both models, saves model artifacts, and exports dashboard JSON files.
+
+## Start Dashboard
 
 ```bash
 python app/server.py
 ```
 
-### 3. View the Dashboard
-Open your browser and navigate to:
-[http://localhost:5000](http://localhost:5000)
+Open:
+
+```text
+http://localhost:5000
+```
+
+## API Endpoints
+
+- `GET /health`
+- `GET /api/metrics`
+- `GET /api/dataset-stats`
+- `GET /api/customer-examples`
+- `GET /api/feature-importance`
+- `GET /api/confusion-matrix`
+- `GET /api/roc-curve`
+- `POST /api/predict`
 
 ## Data Attribution
 
-The dataset used in this project is the **Telco Customer Churn** dataset, originally provided by IBM as part of their sample data sets for IBM Cognos Analytics. It is publicly available on [Kaggle](https://www.kaggle.com/datasets/blastchar/telco-customer-churn) and [IBM's GitHub](https://github.com/IBM/telco-customer-churn-on-icp4d).
+The dataset was originally provided by IBM as part of IBM sample data assets for Telco Customer Churn analysis and is publicly mirrored on Kaggle.
 
 ## License
+
 MIT License

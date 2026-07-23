@@ -1,5 +1,5 @@
 /**
- * Theme Toggle — Dark / Light mode switcher.
+ * Theme Toggle - Dark / Light mode switcher.
  * Persists preference in localStorage.
  * Updates CSS custom properties and Chart.js colors.
  */

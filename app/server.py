@@ -1,20 +1,21 @@
 """
-Flask API Server for Customer Churn Prediction Dashboard.
-Serves prediction endpoints and static dashboard files.
+Flask API server for the Customer Churn Prediction dashboard.
+Serves the dashboard, exported model metrics, and prediction endpoints.
 """
 
+import csv
 import os
 import sys
+from typing import Callable, Optional, Union
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, PROJECT_ROOT)
 
-from flask import Flask, request, jsonify, render_template, send_from_directory
+from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS
-from typing import Union
 
-from src.utils import load_json, get_output_path
 from src.predict import predict_single
+from src.utils import get_data_path, get_output_path, load_json
 
 app = Flask(
     __name__,
@@ -24,7 +25,34 @@ app = Flask(
 CORS(app)
 
 
-# ─── Helper: Load pre-computed JSON ───
+MODEL_LABEL_TO_KEY = {
+    "Logistic Regression": "logistic_regression",
+    "Random Forest": "random_forest",
+}
+
+CUSTOMER_FEATURES = [
+    "gender",
+    "SeniorCitizen",
+    "Partner",
+    "Dependents",
+    "tenure",
+    "PhoneService",
+    "MultipleLines",
+    "InternetService",
+    "OnlineSecurity",
+    "OnlineBackup",
+    "DeviceProtection",
+    "TechSupport",
+    "StreamingTV",
+    "StreamingMovies",
+    "Contract",
+    "PaperlessBilling",
+    "PaymentMethod",
+    "MonthlyCharges",
+    "TotalCharges",
+]
+NUMERIC_FEATURES = {"SeniorCitizen", "tenure", "MonthlyCharges", "TotalCharges"}
+
 
 def _load_output(filename: str) -> Union[dict, list]:
     """Load a JSON file from the outputs/ directory."""
@@ -34,12 +62,105 @@ def _load_output(filename: str) -> Union[dict, list]:
     return load_json(path)
 
 
-# ─── Routes ───
+def _best_model_key() -> str:
+    """Return the saved model key selected by exported metrics."""
+    metrics = _load_output("metrics.json")
+    if isinstance(metrics, dict):
+        return MODEL_LABEL_TO_KEY.get(metrics.get("best_model"), "logistic_regression")
+    return "logistic_regression"
+
+
+def _read_raw_customers() -> list[dict]:
+    """Read real customer records from the local IBM Telco CSV."""
+    path = get_data_path("telco_churn.csv")
+    if not os.path.exists(path):
+        return []
+
+    with open(path, newline="", encoding="utf-8-sig") as file:
+        return list(csv.DictReader(file))
+
+
+def _number_or_zero(value: str) -> float:
+    """Convert CSV numeric values, including blank TotalCharges, to floats."""
+    cleaned = str(value).strip()
+    return float(cleaned) if cleaned else 0.0
+
+
+def _profile_from_row(label: str, row: dict) -> dict:
+    """Convert one CSV row into a dashboard-ready example profile."""
+    customer_data = {}
+    for field in CUSTOMER_FEATURES:
+        value = row.get(field, "")
+        customer_data[field] = _number_or_zero(value) if field in NUMERIC_FEATURES else value
+
+    return {
+        "label": label,
+        "customer_id": row.get("customerID"),
+        "actual_churn": row.get("Churn"),
+        "customer_data": customer_data,
+    }
+
+
+def _first_matching(rows: list[dict], predicate: Callable[[dict], bool]) -> Optional[dict]:
+    """Return the first matching real record; no generated or random examples."""
+    for row in rows:
+        try:
+            if predicate(row):
+                return row
+        except (KeyError, TypeError, ValueError):
+            continue
+    return None
+
+
+def _real_customer_examples() -> list[dict]:
+    """Build a small deterministic set of real examples from the CSV."""
+    rows = _read_raw_customers()
+    if not rows:
+        return []
+
+    profile_rules = [
+        (
+            "Recent churned customer",
+            lambda r: r["Churn"] == "Yes" and _number_or_zero(r["tenure"]) <= 3,
+        ),
+        (
+            "Long-term retained customer",
+            lambda r: r["Churn"] == "No"
+            and _number_or_zero(r["tenure"]) >= 60
+            and r["Contract"] == "Two year",
+        ),
+        (
+            "Fiber month-to-month customer",
+            lambda r: r["InternetService"] == "Fiber optic" and r["Contract"] == "Month-to-month",
+        ),
+        (
+            "DSL customer with tech support",
+            lambda r: r["InternetService"] == "DSL" and r["TechSupport"] == "Yes",
+        ),
+    ]
+
+    examples = []
+    seen_ids = set()
+    for label, predicate in profile_rules:
+        row = _first_matching(rows, predicate)
+        customer_id = row.get("customerID") if row else None
+        if row and customer_id not in seen_ids:
+            examples.append(_profile_from_row(label, row))
+            seen_ids.add(customer_id)
+
+    return examples
+
 
 @app.route("/")
 def index():
     """Serve the main dashboard page."""
     return render_template("index.html")
+
+
+@app.route("/health")
+def health():
+    """Basic health endpoint for deployment checks."""
+    return jsonify({"status": "ok"})
 
 
 @app.route("/api/metrics")
@@ -72,41 +193,32 @@ def api_dataset_stats():
     return jsonify(_load_output("dataset_stats.json"))
 
 
+@app.route("/api/customer-examples")
+def api_customer_examples():
+    """Return deterministic examples from the real IBM Telco CSV."""
+    examples = _real_customer_examples()
+    if not examples:
+        return jsonify({"error": "No local dataset found. Run the training pipeline first."}), 404
+
+    return jsonify(
+        {
+            "source": "IBM Telco Customer Churn CSV stored at data/telco_churn.csv",
+            "examples": examples,
+        }
+    )
+
+
 @app.route("/api/predict", methods=["POST"])
 def api_predict():
-    """
-    Predict churn probability for a single customer.
-
-    Expects JSON body with customer features:
-    {
-        "gender": "Male",
-        "SeniorCitizen": 0,
-        "Partner": "Yes",
-        "Dependents": "No",
-        "tenure": 12,
-        "PhoneService": "Yes",
-        "MultipleLines": "No",
-        "InternetService": "Fiber optic",
-        "OnlineSecurity": "No",
-        "OnlineBackup": "Yes",
-        "DeviceProtection": "No",
-        "TechSupport": "No",
-        "StreamingTV": "Yes",
-        "StreamingMovies": "No",
-        "Contract": "Month-to-month",
-        "PaperlessBilling": "Yes",
-        "PaymentMethod": "Electronic check",
-        "MonthlyCharges": 70.35,
-        "TotalCharges": 844.2
-    }
-    """
+    """Predict churn probability for a single customer profile."""
     try:
         customer_data = request.get_json()
         if not customer_data:
             return jsonify({"error": "No JSON data provided"}), 400
 
-        model_name = customer_data.pop("model", "random_forest")
+        model_name = customer_data.pop("model", _best_model_key())
         result = predict_single(customer_data, model_name=model_name)
+        result["model"] = model_name
         return jsonify(result)
 
     except FileNotFoundError as e:
@@ -115,14 +227,12 @@ def api_predict():
         return jsonify({"error": f"Prediction failed: {str(e)}"}), 500
 
 
-# ─── Main ───
-
 if __name__ == "__main__":
     print("\n" + "=" * 60)
     print("  Customer Churn Prediction Dashboard")
     print("=" * 60)
-    print(f"  Dashboard:  http://localhost:5000")
-    print(f"  API Base:   http://localhost:5000/api/")
+    print("  Dashboard:  http://localhost:5000")
+    print("  API Base:   http://localhost:5000/api/")
     print("=" * 60 + "\n")
 
     app.run(host="0.0.0.0", port=5000, debug=True)
